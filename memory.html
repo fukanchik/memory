@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<!--
+https://www.youtube.com/watch?v=zuegQmMdy8M
+https://www.youtube.com/watch?v=0zd8eznWv4k
+
+https://www.youtube.com/watch?v=2ybLD6_2gKM
+https://stackoverflow.com/questions/1995370/adding-line-numbers-to-html-textarea
+
+int a;
+int b=a;//err
+
+Define 
+* type
+* value
+* taking address
+* dereferencing
+* what is array? how does it differ from a pointer?
+* add or sub a pointer value moves it by the size of the type not just one byte
+* sizeof(array) vs. sizeof(pointer)
+* pointer to pointer : multiple levels of indirection
+* what is memory leak
+* uninitialized data+pointers
+* zero pinter
+* void pointer
+* malloc
+* function pointer
+* show linked list
+* dangling pointer
+* double free
+* sizeof, ptrdiff_t, alignof, size_t
+* 0, NULL, nullptr
+* operator *
+* dereferencing objects of type void*
+* padding
+* draw a small * at top left of a pointer var
+
+    Advanced:
+    * Alignment
+    * aliasing
+
+     Memory:
+     * cell bitness
+     * number of cells
+     * address space
+
+     Each cell:
+     * Hardware
+     ** address
+     ** value
+     ** does exist phisically
+     
+     Cell states:
+     * unused
+     * allocated, undefined
+     * allocated, initialized
+     * allocated, freed
+     * part of a variable
+     * static/auto/stack/etc
+
+     Hardware stack
+
+     Allow consts which won't have memory allocated for them
+
+     Virtual memory
+
+     Memory segments like in DOS
+
+     Different memory kinds like in microcontrollers
+
+     BIG/LITTLE endian
+
+     HEX/DEC display
+
+     Language:
+     int, char, int *, char *, int[], char [],
+     initialization: =NUM, ='c', ="str", =&var, =var.
+
+     Compilation: input = program which list list of statements/declarations.
+     For every declaration determine class. Allocate memory cells sequentially in specified memory. 
+
+     Variable/const display:
+     * name
+     * type
+     * size
+     * memory addr
+
+     mark cells as occupied.
+
+     "Demo mode" - show step by step preprogrammed lesson.
+
+TODO1:
+char dummy[3];
+char letter = 'A';
+int some_junk=42;
+int *integerPointer = &letter;
+draw a red square around mem which is pointed by integerPointer, since there is not enough ybtes in 'letter' to support 'int'.
+
+TODO2:
+introduce padding into var allocation.
+
+-->
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <style>
+#source-code {
+    width: 100%;
+    height: 450px;
+    background-color: #2F2F2F;
+    display: flex;
+    justify-content: space-between;
+    overflow-y: scroll;
+    border-radius: 10px;
+}
+
+#source-code * {
+    box-sizing: border-box;
+}
+
+#source {
+    white-space: pre-wrap;
+    width: calc(100% - 30px);
+    float: right;
+    height: auto;
+    font-family: arial;
+    color: #fff;
+    background: transparent;
+    padding: 15px;
+    line-height: 30px;
+    overflow: hidden;
+    min-height: 100%;
+    border: none;
+}
+
+#line-numbers {
+    min-width: 30px;
+    height: 100%;
+    padding: 15px 5px;
+    font-size: 14px;
+    vertical-align: middle;
+    text-align: right;
+    margin: 0;
+    color: #fff;
+    background: black;
+}
+
+#line-numbers p {
+    display: block;
+    height: 30px;
+    line-height: 30px;
+    margin: 0;
+}
+
+#source:focus{
+    outline: none;
+}
+    </style>
+  </head>
+  <body>
+    <div style="display: none">
+      <span id="sample-program-0"></span>
+      <span id="sample-program-1">char a;
+char b=2;</span>
+      <span id="sample-program-2">xxx var;</span>
+      <span id="sample-program-3">char *name="Tanya";
+char *ptr = &name;
+</span><span id="sample-program-4">int first;
+int second = 2;
+char chr = 'a';
+int seccopy = second;
+char *p = &chr;
+int *secptr = &second;
+char *chrptr = &chr;
+char *str = "UV";
+int array[3];
+</span>
+      <span id="first-page">
+        <p>
+          This is a C language pointers tutorial. It's purpose is to show how primitive types like 'int', 'char' and pointers are layed out in computer memory.
+        </p>
+        <p>It supports a subset of the C language and in some cases deviates from the language. Your program is limited to declarations only. No real code allowed. Arithmetic operations are not suppored. Type checks are very limited - in many cases you can assign pointers of different types without type coercion.
+        </p>
+        <p>
+          In the "Source" window you can enter your C language program. It will be compiled into memory layout which is displayed above in the "Real thing" stripe.
+        </p>
+        <p>
+          The "Real thing" is a simulation of a computer with 256 bytes of memory, 4 byte-wide integer type, 1 byte char type and 1 byte poitner type. All the bytes are displayed in the "Real thing" stripe above. You can scroll it by dragging left and right with a mouse.
+        </p>
+        <p><a href="#" onclick="tutorial.next();">Next page</a></p>
+      </span>
+      <span id="second-page">
+        <p>Memory is shown as a stripe of memory cells. Under each cell there is the cell address in hexadecimal. Inside of each cell it's contents is shown.</p>
+        <p>Unallocated memory cells are shown in <span style="background-color: #cf8f8f; color: gray; font-weight: bold;">GRAY</span>.</p>
+        <p>Allocated but uninitialized memory cells are shown in <span style="background-color: #cf8f8f; color: red; font-weight: bold;">RED</span>.</p>
+        <p>Allocated <em>and</em> uninitialized memory cells are shown in <span style="background-color: #cf8f8f; color: green; font-weight: bold;">GREEN</span>.</p>
+        <p>Whatever you entered into "Source" block is compiled and displayed in the "Real thing" block.</p>
+        <p>As you edit your source code the memory stripe is updated automatically.</p>
+        <p><a href="#" onclick="tutorial.next();">Next page</a></p>
+      </span>
+      <span id="third-page">
+        <p>Any errors in your programs are shown in <span style="color: red; font-weight: bold;">red</span> in the ERROR area.</p>
+        <p><a href="#" onclick="tutorial.next();">Next page</a></p>
+      </span>
+      <span id="fourth-page">
+        <p>Pointers are shown as <span style="color: blue; font-weight: bold;">blue</span> arrows from pointer to the pointee.</p>
+        <p>Here you can see a pointer variable "name" pointing to unnamed block of memory which contains characters "Tanya", and a char pointer which points to name itself (here we differ from the real C language - it will be double pointer in the language).</p>
+        <p><a href="#" onclick="tutorial.next();">Next page</a></p>
+      </span>
+      <span id="fifth-page">
+        <p>More features are shown here.</p>
+      </span>
+    </div><!-- Invisible -->
+    <h1>Memory and pointers demonstration</h1>
+    <h2>Real thing</h2>
+    <div id="hardware-info">
+      Memory size: 256 bytes, Integer size: 4, Char size: 1, Pointer size: 2, Padding: 0
+    </div>
+    <div id="memory-wrapper">
+      <canvas width="10" height="10" id="memory"></canvas>
+    </div>
+    <h2>Abstract thing</h2>
+    <h2>Source</h2>
+    <div id="error" style="color: red; font-weight: bold;">&nbsp;</div>
+    <div id="info-block">
+      <div id="XXX"  style="width: 40%; display:inline-block;vertical-align: top;">
+    <div id="source-code">
+    <div id="line-numbers"><p>1</p></div>
+    <textarea id="source">
+    </textarea>
+    </div></div>
+      <div id="tutorial" style="width: 40%; display:inline-block;vertical-align: top;">
+        <h2>Tutorial</h2>
+        <div id="tutorial-page"></div>
+      </div>
+    </div><!-- info block -->
+    <script>
+      'use scrict';
+
+      function DivPage(divName, codeName) {
+          this.divName = divName;
+          this.codeName = codeName;
+      }
+      function normalize(txt) {
+          return txt.replace(/&amp;/g, "&");
+      }
+      DivPage.prototype.open = function(pageView, codeEditor) {
+          if (this.codeName != null) {
+              codeEditor.value = normalize(document.getElementById(this.codeName).innerHTML);
+              programTextChanged();
+          }
+          pageView.innerHTML = document.getElementById(this.divName).innerHTML;
+      }
+
+      function Tutorial() {
+          this.pages = [];
+          this.pageView = document.getElementById("tutorial-page");
+          this.codeEditor = document.getElementById("source");
+          this.pages.push(new DivPage("first-page", "sample-program-0"));
+          this.pages.push(new DivPage("second-page", "sample-program-1"));
+          this.pages.push(new DivPage("third-page", "sample-program-2"));
+          this.pages.push(new DivPage("fourth-page", "sample-program-3"));
+
+          this.pages.push(new DivPage("fifth-page", "sample-program-4"));
+
+          this.position = 0;
+      }
+      Tutorial.prototype.display = function() {
+          var page = this.pages[this.position];
+          page.open(this.pageView, this.codeEditor)
+      }
+      Tutorial.prototype.next = function() {
+          this.position++;
+          this.display();
+      }
+
+      const INT_SIZE=4;
+      const CHAR_SIZE=1;
+      const PTR_SIZE=2;
+
+      //Visual
+      const DRAW_ARROWS = true;
+      const HIGHTLIGHT_VAR_MEMORY = true;
+      const UNALLOCATED_COLOR = "gray";
+      const ALLOCATED_COLOR = "#FF4040";
+      const ASSIGNED_COLOR = "green";
+
+      /* Display error message at the error area. */
+      function setError(error)
+     {
+         var text;
+
+         if (error == null)
+         {
+             /* No error. */
+             text = "&nbsp;";
+         } else {
+             var msg = "ERROR: " + error
+             var stack = error.stack
+             text = msg;
+             if (stack != null) text += " at <pre>" + stack + "</pre>";
+         }
+         document.getElementById("error").innerHTML = text;
+     }
+
+
+      /* BEGIN: Code editor*/
+      function getWidth(elem) {
+          return elem.scrollWidth - (parseFloat(window.getComputedStyle(elem, null).getPropertyValue('padding-left')) + parseFloat(window.getComputedStyle(elem, null).getPropertyValue('padding-right')))
+      }
+
+      function getFontSize(elem) {
+          return parseFloat(window.getComputedStyle(elem, null).getPropertyValue('font-size'));
+      }
+
+      function cutLines(lines) {
+          return lines.split(/\r?\n/);
+      }
+
+function getLineHeight(elem) {
+    var computedStyle = window.getComputedStyle(elem);
+    var lineHeight = computedStyle.getPropertyValue('line-height');
+    var lineheight;
+    
+    if (lineHeight === 'normal') {
+        var fontSize = computedStyle.getPropertyValue('font-size');
+        lineheight = parseFloat(fontSize) * 1.2;
+    } else {
+        lineheight = parseFloat(lineHeight);
+    }
+    
+    return lineheight;
+}
+
+function getTotalLineSize(size, line, options) {
+    if (typeof options === 'object') options = {};
+    var p = document.createElement('span');
+    p.style.setProperty('white-space', 'pre');
+    p.style.display = 'inline-block';
+    if (typeof options.fontSize !== 'undefined') p.style.fontSize = options.fontSize;
+    p.innerHTML = line;
+    document.body.appendChild(p);
+    var result = (p.scrollWidth / size);
+    p.remove();
+    return Math.ceil(result);
+}
+
+function getLineNumber() {
+          var editor = document.getElementById('source');
+
+    var textLines = editor.value.substr(0, editor.selectionStart).split("\n");
+    var currentLineNumber = textLines.length;
+    var currentColumnIndex = textLines[textLines.length-1].length;
+    return currentLineNumber;
+}
+      
+      function init() {
+          var linenumbers = document.getElementById('line-numbers');
+          var editor = document.getElementById('source');
+
+          var totallines = cutLines(editor.value), linesize;
+          linenumbers.innerHTML = '';
+          for (var i = 1; i <= totallines.length; i++) {
+              var num = document.createElement('p');
+              num.innerHTML = i;
+              linenumbers.appendChild(num);
+            
+              linesize = getTotalLineSize(getWidth(editor), totallines[(i - 1)], {'fontSize' : getFontSize(editor)});
+              if (linesize > 1) {
+                  num.style.height = (linesize * getLineHeight(editor)) + 'px';
+              }
+          }
+        
+          linesize = getTotalLineSize(getWidth(editor), totallines[(getLineNumber() - 1)], {'fontSize' : getFontSize(editor)});
+          if (linesize > 1) {
+              linenumbers.childNodes[(getLineNumber() - 1)].style.height = (linesize * getLineHeight(editor)) + 'px';
+          }
+        
+          editor.style.height = editor.scrollHeight;
+          linenumbers.style.height = editor.scrollHeight;
+
+          programTextChanged();
+          //console.log(this.selectionStart);
+      }
+
+      function CodeEditor() {
+          var linenumbers = document.getElementById('line-numbers');
+          var editor = document.getElementById('source');
+
+          editor.addEventListener('keyup', init)
+          editor.addEventListener('input', init)
+          editor.addEventListener('click', init)
+          editor.addEventListener('paste', init)
+          editor.addEventListener('load', init)
+          editor.addEventListener('mouseover', init)
+      }
+      /* END: Code editor*/
+
+      const ARROW_V_PADDING = 11;
+      function intervalsIntersect(l1, r1, l2, r2)
+      {
+          if (l1 >= l2 && l1 <= r2) return true;
+          if (r1 >= l2 && r1 <= r2) return true;
+
+          return false;
+      }
+
+      function calcArrowExtra(arrowHeights, sourceAddr, targetAddr)
+      {
+          var left = Math.min(sourceAddr, targetAddr);
+          var right = Math.max(sourceAddr, targetAddr);
+          var ret = 0;
+
+          for (var i in arrowHeights)
+          {
+              var old = arrowHeights[i];
+              var oLeft = old[0];
+              var oRight = old[1];
+              var oExtra = old[2];
+
+              if (!intervalsIntersect(oLeft, oRight, left, right))
+                  continue;
+
+              ret = Math.max(ret, oExtra);
+          }
+          arrowHeights.push( [left, right, ret + 1] );
+
+          return ret;
+      }
+
+     function MemoryView(machine) {
+         this.machine = machine;
+         this.canvas = document.getElementById("memory");
+         this.graphics = this.canvas.getContext("2d");
+         this.graphics.font = "bold 16pt Serif";
+         var r = this.graphics.measureText("WW");
+         this.cellWidth = this.graphics.measureText("WWW").width;
+         this.canvas.height = r.width*2;
+         this.memHeight = r.width;
+
+         this.dragging=false;
+         this.mouseX=-1;
+         this.offset = 0;
+         const that = this;
+         this.canvas.addEventListener("mousedown", function(ev) {that.dragStart(ev);});
+         this.canvas.addEventListener("mouseup", function(ev) {that.dragStop(ev);});
+         this.canvas.addEventListener("mousemove", function(ev) {that.dragDo(ev);});
+     }
+      MemoryView.prototype.setWidth = function(w) {
+         this.canvas.width = w;
+         this.redraw();
+     }
+     MemoryView.prototype.dragDo = function(ev) {
+         if(!this.dragging) return;
+         var w = this.canvas.width;
+         var onscreenCells = Math.floor(w / this.cellWidth);
+         var newOffset = this.offset + (ev.clientX - this.mouseX)
+         if(Math.abs(newOffset) >= (this.cellWidth * (this.machine.memsize- onscreenCells))) {
+             return;
+         }
+         if(newOffset > 0) newOffset=0;
+         this.offset = newOffset;
+         this.mouseX=ev.clientX
+         this.redraw();
+     }
+     
+     MemoryView.prototype.dragStart = function(ev) {
+         this.dragging=true;
+         this.mouseX=ev.clientX
+     }
+     MemoryView.prototype.dragStop = function(ev) {
+         this.dragging=false;
+         this.mouseX=-1;
+     }
+     
+     MemoryView.prototype.resize = function()
+     {
+         var outer=document.getElementById("memory-wrapper").getBoundingClientRect();
+         memoryView.setWidth(outer.width);
+     }
+     
+     MemoryView.prototype.redraw = function()
+     {
+         var g = this.graphics;
+         var w = this.canvas.width;
+         var h = this.canvas.height;
+         var memH=this.memHeight;
+         g.font = "bold 16pt Serif";
+         g.fillStyle = "#cf8f8f";
+         g.strokeStyle = "#804040";
+         g.fillRect(0,0, w, h);
+         g.lineWidth=2;
+         g.beginPath();
+         g.moveTo(2,2);
+         g.lineTo(w-2,2);
+         g.lineTo(w-2,memH-2);
+         g.lineTo(2,memH-2);
+         g.lineTo(2,2);
+
+         //draw memory cells
+         var extra = Math.min(0, this.offset);
+         var extra2 = Math.floor(extra) % this.cellWidth;
+         var first = Math.floor( Math.abs(extra) / this.cellWidth );
+         var onscreenCells = Math.floor(w / this.cellWidth);
+
+         //memory grid
+         for(i=0;i<onscreenCells+1;i++) {
+             g.moveTo(extra2+this.cellWidth*i,2);
+             g.lineTo(extra2+this.cellWidth*i,memH-2);
+         }
+         g.stroke();
+
+         //memory contents
+         g.lineWidth=1;
+         g.strokeStyle = "#a08080";
+         g.font = "bold 18pt Serif";
+         var valH = g.measureText("00").width;
+         g.beginPath();
+         for(i=0;i<onscreenCells+1;i++) {
+             const i2=i+first;
+             var value = this.machine.memory[i2].value.toString(16);
+             if(value.length==1)value="0"+value;
+             const state = this.machine.memory[i2].state;
+             var width = g.measureText(value).width;
+             if(state==UNALLOCATED) {
+                 g.fillStyle = UNALLOCATED_COLOR;
+             } else if(state==ALLOCATED) {
+                 g.fillStyle = ALLOCATED_COLOR;
+             } else if(state == ASSIGNED) {
+                 g.fillStyle = ASSIGNED_COLOR;
+             } else {
+                 throw "Unknown state "+state;
+             }
+             g.fillText(value, extra2 + this.cellWidth*i+2+(this.cellWidth-width)/2, memH-4-(memH+4-valH)/2);
+             if(state == UNALLOCATED) {
+                 g.moveTo(extra2 + this.cellWidth*i,     memH-2);
+                 g.lineTo(extra2 + this.cellWidth*(i+1), 2);
+                 g.moveTo(extra2 + this.cellWidth*i,     memH/2-2)
+                 g.lineTo(extra2 + this.cellWidth*(i+0.5), 2);
+                 g.moveTo(extra2 + this.cellWidth*(i+0.5),  memH-2)
+                 g.lineTo(extra2 + this.cellWidth*(i+1), memH/2-2);
+             } else if(state==ALLOCATED) {
+             } else if(state==ASSIGNED) {
+             } else {
+                 throw "Unknown state2 "+state;
+             }
+         }
+         g.stroke();
+
+         //addresses
+         g.font = "bold 12pt Serif";
+         g.lineWidth=2;
+         var textHeight = g.measureText("W").width;
+         var paddingVertical=2;
+         g.fillStyle = "black";
+         for(i=0;i<onscreenCells+1;i++) {
+             const i2=i+first;
+             var addr = i2.toString(16);
+             var width = g.measureText(addr).width;
+             var left = extra2+this.cellWidth*i + (this.cellWidth-width)/2;
+             g.fillText(addr, left, memH+paddingVertical+textHeight);
+         }
+
+         //variables
+         g.strokeStyle = "#a08080";
+         g.fillStyle = "black";
+
+         var arrowHeights = [];
+         for(var varI in machine.variables) {
+             var variable = machine.variables[varI];
+             if(variable.addr > onscreenCells+1) {
+                 //continue;
+             }
+             var width = g.measureText(variable.name).width;
+             var left  = extra+Math.floor( this.cellWidth * variable.addr );
+             var right = extra+Math.floor( this.cellWidth * (variable.addr+variable.size) );
+             var middle = Math.floor( (right+left - width)/2 );
+             var up = memH + paddingVertical + textHeight;
+
+             if(HIGHTLIGHT_VAR_MEMORY) {
+                 g.strokeStyle = "#fff";
+                 g.beginPath();
+                 g.moveTo(left+4, 4);
+                 g.lineTo(right-4, 4);
+                 g.lineTo(right-4, memH-4);
+                 g.lineTo(left+4, memH-4);
+                 g.lineTo(left+4,4);
+                 g.stroke();
+             }
+             g.strokeStyle = "#a08080";
+             g.beginPath();
+             g.moveTo(left+this.cellWidth/4, up);
+             g.lineTo(left+this.cellWidth/4, up+textHeight);
+             g.lineTo(right - this.cellWidth/4, up+textHeight);
+             g.lineTo(right - this.cellWidth/4, up);
+             g.stroke();
+             if(variable.name)
+             {
+                 g.fillText(variable.name, middle, memH + paddingVertical + textHeight*2);
+             }
+             /* For char variables draw a small letter in the right bottom corner of the cell */
+             if((!variable.typeName.isPointer) && (variable.typeName.name == "char") && (variable.value != null)) {
+                 g.fillStyle = "#404040";
+                 const txt = "'"+String.fromCharCode(variable.value.value)+"'";
+                 const textSize = g.measureText(txt);
+                 const textHeight = textSize.actualBoundingBoxAscent + textSize.actualBoundingBoxDescent;
+                 g.fillText(txt, right - textSize.width - 4, 4 + textHeight);
+             }
+             if(DRAW_ARROWS && (variable.typeName.isPointer) && (variable.value != null)) {
+                 //draw arrow
+                 var targetAddr;
+                 var varValue = variable.value;
+                 if (varValue instanceof CVarValue) {
+                     //Case when we point to an CArray
+                     const variableInner = machine.getVariable(varValue.varName);
+                     if (variableInner.typeName.isPointer)
+                     {
+                         if (variableInner.value == null)
+                             throw "Can't assign pointer " +variable.name + " from uninitialized variable " + variableInner.name;
+                         if (variableInner.value.mytype == "CVarAddress")
+                         {
+                             const inner = machine.getVariable(variableInner.value.varName);
+                             targetAddr = inner.addr;
+                         } else
+                             throw "Can't assign pointer from " + JSON.stringify(variableInner.value);
+                     } else if (variable.typeName.mytype == "CArray")
+                     {
+                         targetAddr = variable.value;
+                     } else
+                         throw "Initialization makes pointer from " + variable.name;
+                 } else if(varValue instanceof CVarAddress) {
+                     const targetVar = this.machine.getVariable(variable.value.varName);
+                     targetAddr = targetVar.addr;
+                 } else if(varValue instanceof CArray) {
+                     const targetVar = this.machine.getVariable(variable.value.varName);
+                     targetAddr = targetVar.addr;
+                 } else {
+                     throw JSON.stringify(varValue) + " not supported in drawing arrows";
+                 }
+                 var arrowExtraHeight = calcArrowExtra(arrowHeights, variable.addr, targetAddr);
+                 var targetLeft = extra + this.cellWidth*targetAddr;
+                 const tLeft = targetLeft + this.cellWidth/4 + arrowExtraHeight;
+                 const base = memH + paddingVertical;
+
+                 var red = 0x30 + 0x10 * arrowExtraHeight;
+                 g.strokeStyle = "#"+red.toString(16) + "40ff";
+                 g.lineWidth = 3;
+                 g.beginPath();
+                 g.moveTo(right - this.cellWidth/4, base + textHeight);
+                 g.lineTo(right - this.cellWidth/4, base - ARROW_V_PADDING*arrowExtraHeight);
+                 g.lineTo(tLeft, base - ARROW_V_PADDING*arrowExtraHeight);
+                 g.lineTo(tLeft, base + textHeight);
+                 g.lineTo(tLeft - 4, base + textHeight-3);
+                 g.moveTo(tLeft + 4, base + textHeight-3)
+                 g.lineTo(tLeft, base + textHeight);
+                 g.stroke();
+             }
+         }
+     }
+      /* END: MemoryView */
+     const UNALLOCATED = 0;
+     const ALLOCATED = 1;//allocated, no value
+     const ASSIGNED = 2;//allocated, has value
+     
+     function MemCell()
+     {
+         this.state = UNALLOCATED;
+         this.value = 0x00; // FIXME - random or 0xEE or something!
+     }
+     
+     function Machine(/*memsize, bitness*/) {
+         this.memsize = 256;
+         this.bitness = 8;
+         this.memory = new Array();
+         for(var i=0;i<this.memsize;++i) {
+             this.memory[i]=new MemCell();
+         }
+         this.variables = new Array();
+     }
+     Machine.prototype.getVariable = function(varName)
+     {
+         for(var i = 0; i < this.variables.length; ++i) {
+             const variable = this.variables[i];
+             if(variable.name != varName) continue;
+             return variable;
+         }
+         throw "Variable not found " + varName;
+     }
+      Machine.prototype.variableExists = function(varName)
+      {
+         for(var i = 0; i < this.variables.length; ++i) {
+             const variable = this.variables[i];
+             if(variable.name != varName) continue;
+             return true;
+         }
+          return false;
+      }
+     Machine.prototype.poke = function(addr, val) {
+         this.memory[addr].value = val;
+         this.memory[addr].state = ASSIGNED;
+     }
+     
+     Machine.prototype.reset = function() {
+         for(var i=0;i<this.memsize;++i) {
+             this.memory[i]=new MemCell();
+         }
+         this.variables= new Array();
+     }
+     
+     function checkUnallocated(mem, addr, size) {
+         for(var i=addr;i<addr+size;++i) {
+             if(mem[i].state != UNALLOCATED) {
+                 return false;
+             }
+         }
+         return true;
+     }
+     Machine.prototype.allocate = function(size) {
+         for(var i=0;i<(this.memsize - size);++i) {
+             if(checkUnallocated(this.memory, i, size)) {
+                 for(var j=i;j<i+size;++j) {
+                     this.memory[j].state=ALLOCATED;
+                 }
+                 return i;
+             }
+         }
+         throw "Can't allocate " + size;
+     }
+     function* varcount() {
+         var ret=0;
+         while(true) {
+             yield ret++;
+         }
+     }
+     var varIdGenerator = varcount();
+     function Variable(name, typeName, addr, size, value)
+     {
+         this.id=varIdGenerator.next().value;
+         this.name=name;
+         this.typeName=typeName;
+         this.addr=addr;
+         this.size=size;
+         this.value=value;
+     }
+     //END MACHINE
+     // C LANGUAGE    
+     function CProgram() {
+         this.declarations = new Array();
+     }
+      function CArray(typeName, nElem, items) {
+          this.mytype = "CArray";
+          this.typeName = typeName;
+          this.nElem = nElem;
+          this.items = items;
+          this.itemSize = typeName.elementSize();
+     }
+      CArray.prototype.elementSize = function() {
+          return this.typeName.elementSize();
+      }
+     CArray.prototype.getSize = function() {
+         return this.nElem * this.itemSize;
+     }
+     CArray.prototype.asBytes = function() {
+         //CValue(char) array is the only thing supported now
+         var ret=[];
+         for(var i=0;i<this.items.length;++i) {
+             ret.push(this.items[i].value);
+         }
+         return ret;
+     }
+      
+     function CDeclaration(typeName, varName, initializer) {
+         this.mytype = "CDeclaration";
+         this.typeName = typeName;
+         this.varName = varName;
+         this.initializer = initializer;
+     }
+     CDeclaration.prototype.getTypeSize = function() {
+         var ret= this.typeName.getSize();
+         return this.typeName.getSize();
+     }
+     function CValue(val) {
+         this.value = val;
+     }
+     CValue.prototype.getValue = function(machine) {
+         return this.value;
+     }
+     function CVarAddress(varName) {
+         this.mytype = "CVarAddress";
+         this.varName = varName;
+     }
+      CVarAddress.prototype.getValue = function(machine) {
+         const variable = machine.getVariable(this.varName);
+         return variable.addr;
+      }
+     function CVarValue(varName) {
+         this.mytype = "CVarValue";
+         this.varName = varName;
+     }
+     CVarValue.prototype.getValue = function(machine) {
+         const variable = machine.getVariable(this.varName);
+         return variable.value.value;
+     }
+    
+     //**LEXER
+     const LEXID  = 1; //identifier or keyword
+     const LEXNUM = 2; //number
+     const LEXEOS = 3; //end of statement
+     const LEXEOF = 4; //end of file
+     const LEXSTAR= 5; //. *
+     const LEXEQL = 6; //=
+     const LEXAMP = 7; //&
+     const LEXCHAR= 8;
+     const LEXSTRING = 9;
+     const LEXLBRAK = 10; //[
+      const LEXRBRAK = 11; //]
+      const LEXLCURL = 12; //{
+      const LEXRCURL = 13; //}
+      const LEXCOMMA = 14; //,
+
+     function lex_kind_string(lex) {
+       switch(lex)
+       {
+       case LEXID:
+           return "identifier";
+       case LEXNUM:
+           return "number";
+       case LEXEOS:
+           return "end of statement (;)";
+       case LEXEOF:
+           return "end of file";
+       case LEXSTAR:
+           return "*";
+       case LEXEQL:
+           return "=";
+       case LEXAMP:
+           return "&";
+       case LEXCHAR:
+           return "character";
+       case LEXSTRING:
+           return "string";
+       case LEXLBRAK:
+           return "[";
+       case LEXRBRAK:
+           return "]";
+       case LEXLCURL:
+           return "{";
+           case LEXRCURL:
+           return "}";
+           case LEXCOMMA:
+           return ",";
+       default:
+           return "unknown lexeme kind" + lex;
+       }
+     }
+     
+      function Lexeme(kind, name, start, stop) {
+         this.kind = kind;
+         this.name = name;
+          this.start = start;
+          this.stop = stop;
+      }
+      Lexeme.prototype.getPositionStr = function()
+      {
+          return this.start + "-"+this.stop;
+      }
+     function Lexer(text) {
+         this.text=text;
+         this.position=0;
+     }
+     function isspace(chr) {
+         return chr==' ' || chr=='\t' || chr=='\n' || chr=='\r' || chr==-1;
+     }
+     Lexer.prototype.hasNext = function() {
+         return this.position < this.text.length;
+     }
+     Lexer.prototype.next = function() {
+         if(!this.hasNext()) return new Lexeme(LEXEOF, null, 0, 0);
+
+         while(isspace(this.text[this.position])) this.position++;
+
+         if(!this.hasNext()) return new Lexeme(LEXEOF, null, 0, 0);
+
+         var ch = this.text[this.position++];
+         if((ch>='a' &&ch <='z') || (ch>='A' && ch<='Z') || (ch=='_')) {
+             const start = this.position;
+             var idName = "";
+             //id or keyword
+             while(((this.position <= this.text.length) && ((ch>='a' &&ch <='z') || (ch>='A' && ch<='Z') || (ch=='_') || (ch>='0' && ch<='9')))) {
+                 idName=idName+ch;
+                 ch=this.text[this.position++];
+             }
+             this.position--;
+             const stop = this.position;
+             return new Lexeme(LEXID, idName, start, stop);
+         } else if(ch>='0'&&ch<='9') {
+             //number
+             const start = this.position;
+             var idValue="";
+             while( (this.position < this.text.length) && (ch>='0' && ch<='9')) {
+                 idValue=idValue+ch;
+                 ch=this.text[this.position++];
+             }
+             const stop = this.position;
+             this.position--;
+             return new Lexeme(LEXNUM, parseInt(idValue), start, stop);
+         } else if(ch=='"') {
+             //string
+             const start = this.position;
+             var ret="";
+             while( (this.position < this.text.length) && this.text[this.position] != '"') {
+                 ret=ret+this.text[this.position];
+                 this.position++;
+             }
+             if(this.text[this.position] != '"') {
+                 throw "Incomplete string";
+             }
+             this.position++;
+             const stop = this.position;
+             return new Lexeme(LEXSTRING, ret, start, stop);
+         } else if(ch=="'") {
+             //char
+             const start = this.position;
+             ch=this.text[this.position++];
+             end=this.text[this.position++];
+             if (end != "'") throw "Expecting '";
+             const stop = this.position;
+             return new Lexeme(LEXCHAR, ch.charCodeAt(0), start, stop);
+         } else if(ch=="=") {
+             //assign
+             const pos = this.position;
+             return new Lexeme(LEXEQL, null, pos, pos);
+         } else if(ch=="&") {
+             //address
+             const pos = this.position;
+             return new Lexeme(LEXAMP, null, pos, pos);
+         } else if(ch==";") {
+             //end of statement
+             const pos = this.position;
+             return new Lexeme(LEXEOS, null, pos, pos);
+         } else if(ch=="*") {
+             const pos = this.position;
+             return new Lexeme(LEXSTAR, null, pos, pos);
+         } else if (ch == "[") {
+             const pos = this.position;
+             return new Lexeme(LEXLBRAK, null, pos, pos);
+         } else if (ch == "]") {
+             const pos = this.position;
+             return new Lexeme(LEXRBRAK, null, pos, pos);
+         } else if (ch == "{") {
+             const pos = this.position;
+             return new Lexeme(LEXLCURL, null, pos, pos);
+         } else if (ch == "}") {
+             const pos = this.position;
+             return new Lexeme(LEXRCURL, null, pos, pos);
+         }
+         throw "Can't make lexeme out of " + ch;
+     }
+     //END LEXER
+     
+     //TOP DOWN PARSER
+      // BEGIN: CType
+      function CType(typeName, elemSize, isPointer) {
+          this.name = typeName;
+          this.elSize = elemSize;
+          this.isPointer = isPointer;
+      }
+      CType.prototype.elementSize = function() {
+          if (this.isPointer) return PTR_SIZE;
+          return this.elSize;
+      }
+      CType.prototype.getSize = function() {
+          if (this.isPointer) return PTR_SIZE;
+          return this.elSize;
+      }
+      
+     function buildTypeSpecifier(name) {
+         if (name == "int") {
+             return new CType("int", INT_SIZE, false);
+         } else if (name == "char") {
+             return new CType("char", CHAR_SIZE, false);
+         }
+         throw "Unknown type " + name + ". I only know 'int', 'char' and pointers.";
+     }
+      //END: CType
+
+     function expression(lexer) {
+         var lex = lexer.next();
+         if(lex.kind == LEXNUM) {
+             return new CValue(lex.name);
+         } else if(lex.kind==LEXAMP) {
+             var variable = lexer.next();
+             //FIXME: make sure such var exists already
+             return new CVarAddress(variable.name);
+         } else if (lex.kind == LEXCHAR) {
+             return new CValue(lex.name);//FIXME: CValue for ints
+         } else if (lex.kind == LEXID) {
+             return new CVarValue(lex.name);//FIXME: check var exists
+         } else if(lex.kind == LEXSTRING) {
+             var arr = [];
+
+             for(i = 0; i < lex.name.length; ++i) {
+                 arr.push(new CValue(lex.name[i].charCodeAt(0)));
+             }
+             arr.push(new CValue(0));
+
+             return new CArray(buildTypeSpecifier("char"), arr.length, arr);
+         }
+         throw "Expression expected. Got " + lex_kind_string(lex.kind);
+     }
+
+     function declaration(lexer)
+     {
+         var lexType = lexer.next();
+         if (lexType.kind == LEXEOF) return null;
+         if (lexType.kind == LEXID) {
+             var varType = buildTypeSpecifier(lexType.name);
+             var varName = lexer.next();
+
+             if (varName.kind == LEXSTAR) {
+                 varType.isPointer = true;
+                 varName = lexer.next();
+             }
+
+             if(varName.kind != LEXID) throw "Variable name expected";
+
+             var eos = lexer.next();
+             var initializer = null;
+
+             if(eos.kind == LEXEQL) {
+                 // assignment-expression | '{' initializer-list '}'
+                 //var next = lexer.peek()
+                 if (eos.kind == LEXLCURL) {
+                     initializer = initializer_list(lexer);
+                 } else {
+                     initializer = expression(lexer);
+                 }
+                 eos = lexer.next();
+             } else if (eos.kind == LEXLBRAK) {
+                 var array_size = expression(lexer);
+                 var rbrak = lexer.next();
+                 if (rbrak.kind != LEXRBRAK) throw "Right bracket expected";
+                 if (!(array_size instanceof CValue))
+                     throw "Array size should be a simple value";
+                 varType = new CArray(varType, array_size.value, null);
+                 eos = lexer.next();
+             }
+
+             if (eos.kind != LEXEOS)
+                 throw "Either end of statement (;) or array description ([]) or assignment (=) expected.";
+
+             return new CDeclaration(varType, varName.name, initializer);
+         } else {
+             throw "Unexpected " + lex_kind_string(lexType.kind) + " at " + lexType.getPositionStr();
+         }
+     }
+
+     function parseCpp(text)
+     {
+         var program = new CProgram();
+         var lexer = new Lexer(text);
+         var i;
+         
+         for(i = 0; i < 100 && lexer.hasNext(); ++i) {
+             var decl = declaration(lexer);
+             if(decl == null) continue;
+             program.declarations.push(decl);
+         }
+         return program;
+     }
+     //END PARSER
+
+     function storeBytes(machine, addr, size, value) {
+         // LITTLE ENDIAN
+         for(var i = 0; i < size; ++i) {
+             const b = value & 0xFF;
+             machine.poke(addr+i, b)
+             value /= 0x100;
+         }
+     }
+     
+     function serialize(machine, addr, varType, varValue) {
+         if (varType.isPointer) {
+             //pointer to either variable or array
+             if (varValue instanceof CVarValue) {
+                 // Case when we point to an CArray
+                 var variable = machine.getVariable(varValue.varName);
+                 if (variable.typeName.isPointer)
+                 {
+                     storeBytes(machine, addr, PTR_SIZE, variable.addr);
+                 } else if (variable.typeName.mytype === "CArray")
+                 {
+                     storeBytes(machine, addr, PTR_SIZE, variable.addr);
+                 } else
+                     throw "Initialization makes pointer from " + variable.name;
+             } else if (varValue instanceof CVarAddress) {
+                 var variable = machine.getVariable(varValue.varName);
+                 storeBytes(machine, addr, PTR_SIZE, variable.addr);
+             } else if(varValue instanceof CArray) {
+                 var arrAddr = machine.allocate(varValue.getSize());
+                 var arrBytes = varValue.asBytes();
+                 for(var i=0;i<arrBytes.length;++i) {
+                     storeBytes(machine, arrAddr+i, 1, arrBytes[i]);
+                 }
+                 //create unnamed var for array
+                 machine.variables.push(new Variable(null, "array", arrAddr, arrBytes.length, arrBytes));
+                 
+                 storeBytes(machine, addr, PTR_SIZE, arrAddr);
+             }
+         } else {
+             if(varType.name == "int") {
+                 const val = varValue.getValue(machine);
+                 storeBytes(machine, addr, INT_SIZE, val);
+             } else if(varType.name == "char") {
+                 storeBytes(machine, addr, CHAR_SIZE, varValue.value);
+             } else {
+                 throw "Do not know how to serialize this type " + varType;
+             }
+         }
+     }
+
+     function compile(program, machine)
+     {
+         machine.reset();
+         for(var i in program.declarations) {
+             var decl = program.declarations[i];
+             var size = decl.getTypeSize();
+             var addr = machine.allocate(size);
+             const value = (decl.initializer == null) ? null : decl.initializer;//FIXME:getValue()
+
+             var variableExists = machine.variableExists(decl.varName);
+             if (variableExists)
+                 throw "Variable '" + decl.varName + "' already defined.";
+
+             if (value != null)
+             {
+                 serialize(machine, addr, decl.typeName, value);
+             }
+             
+             machine.variables.push(new Variable(decl.varName, decl.typeName, addr, size, value));
+         }
+     }
+     
+     var machine = new Machine();
+     var memoryView=new MemoryView(machine);
+      var tutorial = new Tutorial();
+
+     function programTextChanged()
+     {
+         setError(null);
+         try {
+             var program = parseCpp(document.getElementById("source").value);
+             compile(program, machine);
+             memoryView.redraw();
+         } catch(error) {
+             setError(error);
+         }
+     }
+     
+     window.onresize = memoryView.resize;
+     memoryView.resize();
+      programTextChanged();
+
+      window.onload = function() {
+          var editor = new CodeEditor();
+          tutorial.display();
+      }
+    </script>
+  </body>
+</html>
