@@ -267,7 +267,7 @@ int array[3];
           this.position = 0;
       }
       Tutorial.prototype.display = function() {
-          var page = this.pages[this.position];
+          const page = this.pages[this.position];
           page.open(this.pageView, this.codeEditor)
       }
       Tutorial.prototype.next = function() {
@@ -1142,15 +1142,15 @@ function getLineNumber() {
          }
      }
      
-     var machine = new Machine();
-     var memoryView=new MemoryView(machine);
-      var tutorial = new Tutorial();
+     const machine = new Machine();
+     const memoryView = new MemoryView(machine);
+     const tutorial = new Tutorial();
 
      function programTextChanged()
      {
          setError(null);
          try {
-             var program = parseCpp(document.getElementById("source").value);
+             const program = parseCpp(document.getElementById("source").value);
              compile(program, machine);
              memoryView.redraw();
          } catch(error) {
@@ -1163,7 +1163,7 @@ function getLineNumber() {
       programTextChanged();
 
       window.onload = function() {
-          var editor = new CodeEditor();
+          const editor = new CodeEditor();
           tutorial.display();
       }
     </script>
