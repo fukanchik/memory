@@ -93,10 +93,15 @@ char dummy[3];
 char letter = 'A';
 int some_junk=42;
 int *integerPointer = &letter;
-draw a red square around mem which is pointed by integerPointer, since there is not enough ybtes in 'letter' to support 'int'.
+draw a red square around mem which is pointed by integerPointer, since there is not enough bytes in 'letter' to support 'int'.
 
 TODO2:
 introduce padding into var allocation.
+
+TODO3:
+Explain why the following is not possible:
+char name[16];
+name="Bob";
 
 -->
 <html>
