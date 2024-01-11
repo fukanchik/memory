@@ -677,11 +677,11 @@ function getLineNumber() {
      function Machine(/*memsize, bitness*/) {
          this.memsize = 256;
          this.bitness = 8;
-         this.memory = new Array();
-         for(var i=0;i<this.memsize;++i) {
-             this.memory[i]=new MemCell();
+         this.memory = [];
+         for(var i = 0; i < this.memsize; ++i) {
+             this.memory[i] = new MemCell();
          }
-         this.variables = new Array();
+         this.variables = [];
      }
      Machine.prototype.getVariable = function(varName)
      {
@@ -708,9 +708,9 @@ function getLineNumber() {
      
      Machine.prototype.reset = function() {
          for(var i=0;i<this.memsize;++i) {
-             this.memory[i]=new MemCell();
+             this.memory[i] = new MemCell();
          }
-         this.variables= new Array();
+         this.variables = [];
      };
      
      function checkUnallocated(mem, addr, size) {
@@ -751,7 +751,7 @@ function getLineNumber() {
      //END MACHINE
      // C LANGUAGE    
      function CProgram() {
-         this.declarations = new Array();
+         this.declarations = [];
      }
       function CArray(typeName, nElem, items) {
           this.mytype = "CArray";
@@ -1100,8 +1100,8 @@ function getLineNumber() {
                  } else
                      throw "Initialization makes pointer from " + variable.name;
              } else if (varValue instanceof CVarAddress) {
-                 var variable = machine.getVariable(varValue.varName);
-                 storeBytes(machine, addr, PTR_SIZE, variable.addr);
+                 var referencedVariable = machine.getVariable(varValue.varName);
+                 storeBytes(machine, addr, PTR_SIZE, referencedVariable.addr);
              } else if(varValue instanceof CArray) {
                  var arrAddr = machine.allocate(varValue.getSize());
                  var arrBytes = varValue.asBytes();
