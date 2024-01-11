@@ -455,35 +455,35 @@ function getLineNumber() {
       MemoryView.prototype.setWidth = function(w) {
          this.canvas.width = w;
          this.redraw();
-     }
+     };
      MemoryView.prototype.dragDo = function(ev) {
          if(!this.dragging) return;
          var w = this.canvas.width;
          var onscreenCells = Math.floor(w / this.cellWidth);
-         var newOffset = this.offset + (ev.clientX - this.mouseX)
+         var newOffset = this.offset + (ev.clientX - this.mouseX);
          if(Math.abs(newOffset) >= (this.cellWidth * (this.machine.memsize- onscreenCells))) {
              return;
          }
          if(newOffset > 0) newOffset=0;
          this.offset = newOffset;
-         this.mouseX=ev.clientX
+         this.mouseX = ev.clientX;
          this.redraw();
-     }
+     };
      
      MemoryView.prototype.dragStart = function(ev) {
          this.dragging=true;
-         this.mouseX=ev.clientX
-     }
+         this.mouseX=ev.clientX;
+     };
      MemoryView.prototype.dragStop = function(ev) {
          this.dragging=false;
          this.mouseX=-1;
-     }
+     };
      
      MemoryView.prototype.resize = function()
      {
          var outer=document.getElementById("memory-wrapper").getBoundingClientRect();
          memoryView.setWidth(outer.width);
-     }
+     };
      
      MemoryView.prototype.redraw = function()
      {
