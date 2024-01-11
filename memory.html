@@ -273,12 +273,12 @@ int array[3];
       }
       Tutorial.prototype.display = function() {
           const page = this.pages[this.position];
-          page.open(this.pageView, this.codeEditor)
-      }
+          page.open(this.pageView, this.codeEditor);
+      };
       Tutorial.prototype.next = function() {
           this.position++;
           this.display();
-      }
+      };
 
       const INT_SIZE=4;
       const CHAR_SIZE=1;
@@ -301,8 +301,8 @@ int array[3];
              /* No error. */
              text = "&nbsp;";
          } else {
-             var msg = "ERROR: " + error
-             var stack = error.stack
+             var msg = "ERROR: " + error;
+             var stack = error.stack;
              text = msg;
              if (stack != null) text += " at <pre>" + stack + "</pre>";
          }
@@ -393,12 +393,12 @@ function getLineNumber() {
           var linenumbers = document.getElementById('line-numbers');
           var editor = document.getElementById('source');
 
-          editor.addEventListener('keyup', init)
-          editor.addEventListener('input', init)
-          editor.addEventListener('click', init)
-          editor.addEventListener('paste', init)
-          editor.addEventListener('load', init)
-          editor.addEventListener('mouseover', init)
+          editor.addEventListener('keyup', init);
+          editor.addEventListener('input', init);
+          editor.addEventListener('click', init);
+          editor.addEventListener('paste', init);
+          editor.addEventListener('load', init);
+          editor.addEventListener('mouseover', init);
       }
       /* END: Code editor*/
 
@@ -760,12 +760,12 @@ function getLineNumber() {
           this.items = items;
           this.itemSize = typeName.elementSize();
      }
-      CArray.prototype.elementSize = function() {
+     CArray.prototype.elementSize = function() {
           return this.typeName.elementSize();
-      }
+     };
      CArray.prototype.getSize = function() {
          return this.nElem * this.itemSize;
-     }
+     };
      CArray.prototype.asBytes = function() {
          //CValue(char) array is the only thing supported now
          var ret=[];
@@ -790,15 +790,15 @@ function getLineNumber() {
      }
      CValue.prototype.getValue = function(machine) {
          return this.value;
-     }
+     };
      function CVarAddress(varName) {
          this.mytype = "CVarAddress";
          this.varName = varName;
      }
-      CVarAddress.prototype.getValue = function(machine) {
+     CVarAddress.prototype.getValue = function(machine) {
          const variable = machine.getVariable(this.varName);
          return variable.addr;
-      }
+     };
      function CVarValue(varName) {
          this.mytype = "CVarValue";
          this.varName = varName;
@@ -806,7 +806,7 @@ function getLineNumber() {
      CVarValue.prototype.getValue = function(machine) {
          const variable = machine.getVariable(this.varName);
          return variable.value.value;
-     }
+     };
     
      //**LEXER
      const LEXID  = 1; //identifier or keyword
@@ -869,7 +869,7 @@ function getLineNumber() {
       Lexeme.prototype.getPositionStr = function()
       {
           return this.start + "-"+this.stop;
-      }
+      };
      function Lexer(text) {
          this.text=text;
          this.position=0;
