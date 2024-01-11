@@ -9,7 +9,7 @@ https://stackoverflow.com/questions/1995370/adding-line-numbers-to-html-textarea
 int a;
 int b=a;//err
 
-Define 
+Define
 * type
 * value
 * taking address
@@ -48,7 +48,7 @@ Define
      ** address
      ** value
      ** does exist phisically
-     
+
      Cell states:
      * unused
      * allocated, undefined
@@ -76,7 +76,7 @@ Define
      initialization: =NUM, ='c', ="str", =&var, =var.
 
      Compilation: input = program which list list of statements/declarations.
-     For every declaration determine class. Allocate memory cells sequentially in specified memory. 
+     For every declaration determine class. Allocate memory cells sequentially in specified memory.
 
      Variable/const display:
      * name
@@ -171,8 +171,12 @@ char b=2;</span>
       <span id="sample-program-2">xxx var;</span>
       <span id="sample-program-3">char *name="Tanya";
 char *ptr = &name;
-</span><span id="sample-program-4">int first;
+</span><span id="sample-program-4">char a[] = "asd";
+char *b = "asd";
+char c = 'a';
+</span><span id="sample-program-5">int first;
 int second = 2;
+char u;
 char chr = 'a';
 int seccopy = second;
 char *p = &chr;
@@ -180,6 +184,7 @@ int *secptr = &second;
 char *chrptr = &chr;
 char *str = "UV";
 int array[3];
+char string_literal[] = "string-literal";
 </span>
       <span id="first-page">
         <p>
@@ -213,7 +218,10 @@ int array[3];
         <p>Here you can see a pointer variable "name" pointing to unnamed block of memory which contains characters "Tanya", and a char pointer which points to name itself (here we differ from the real C language - it will be double pointer in the language).</p>
         <p><a href="#" onclick="tutorial.next();">Next page</a></p>
       </span>
-      <span id="fifth-page">
+	  <span id="fifth-page">Ever wondered what is the difference between char [] and char *?
+        <p><a href="#" onclick="tutorial.next();">Next page</a></p>
+	  </span>
+      <span id="sixth-page">
         <p>More features are shown here.</p>
       </span>
     </div><!-- Invisible -->
@@ -268,6 +276,7 @@ int array[3];
           this.pages.push(new DivPage("fourth-page", "sample-program-3"));
 
           this.pages.push(new DivPage("fifth-page", "sample-program-4"));
+          this.pages.push(new DivPage("sixth-page", "sample-program-5"));
 
           this.position = 0;
       }
@@ -386,7 +395,6 @@ function getLineNumber() {
           linenumbers.style.height = editor.scrollHeight;
 
           programTextChanged();
-          //console.log(this.selectionStart);
       }
 
       function CodeEditor() {
@@ -774,6 +782,9 @@ function getLineNumber() {
          }
          return ret;
      };
+	  CArray.prototype.getValue = function(machine) {
+          return this.asBytes();
+	  };
 
      function CDeclaration(typeName, varName, initializer) {
          this.mytype = "CDeclaration";
@@ -819,10 +830,10 @@ function getLineNumber() {
      const LEXCHAR= 8;
      const LEXSTRING = 9;
      const LEXLBRAK = 10; //[
-      const LEXRBRAK = 11; //]
-      const LEXLCURL = 12; //{
-      const LEXRCURL = 13; //}
-      const LEXCOMMA = 14; //,
+     const LEXRBRAK = 11; //]
+     const LEXLCURL = 12; //{
+     const LEXRCURL = 13; //}
+     const LEXCOMMA = 14; //,
 
      function lex_kind_string(lex) {
        switch(lex)
@@ -868,11 +879,12 @@ function getLineNumber() {
       }
       Lexeme.prototype.getPositionStr = function()
       {
-          return this.start + "-"+this.stop;
+          return this.start + "-" + this.stop;
       };
      function Lexer(text) {
-         this.text=text;
-         this.position=0;
+         this.text = text;
+         this.position = 0;
+		 this.backtrack = [];
      }
      function isspace(chr) {
          return chr==' ' || chr=='\t' || chr=='\n' || chr=='\r' || chr==-1;
@@ -880,7 +892,16 @@ function getLineNumber() {
      Lexer.prototype.hasNext = function() {
          return this.position < this.text.length;
      };
+	  Lexer.prototype.peek = function() {
+		  var ret = this.next();
+		  this.backtrack.push(ret);
+		  return ret;
+	  }
      Lexer.prototype.next = function() {
+		 if (this.backtrack.length > 0)
+		 {
+			 return this.backtrack.pop();
+		 }
          if(!this.hasNext()) return new Lexeme(LEXEOF, null, 0, 0);
 
          while(isspace(this.text[this.position])) this.position++;
@@ -1015,6 +1036,7 @@ function getLineNumber() {
          throw "Expression expected. Got " + lex_kind_string(lex.kind);
      }
 
+	  /* C declaration. */
      function declaration(lexer)
      {
          var lexType = lexer.next();
@@ -1043,13 +1065,26 @@ function getLineNumber() {
                  }
                  eos = lexer.next();
              } else if (eos.kind == LEXLBRAK) {
-                 var array_size = expression(lexer);
-                 var rbrak = lexer.next();
-                 if (rbrak.kind != LEXRBRAK) throw "Right bracket expected";
-                 if (!(array_size instanceof CValue))
-                     throw "Array size should be a simple value";
-                 varType = new CArray(varType, array_size.value, null);
-                 eos = lexer.next();
+				 var next = lexer.peek();
+				 if (next.kind == LEXRBRAK) {
+					 /* char name[] = ""; */
+					 
+					 next = lexer.next();
+					 var eq = lexer.next();
+					 if (eq.kind != LEXEQL) throw "Array initialization expected.";
+					 initializer = expression(lexer);
+					 varType.elSize = initializer.nElem;
+					 eos = lexer.next();
+				 } else {
+					 /* char/int name[2];*/
+					 var array_size = expression(lexer);
+					 var rbrak = lexer.next();
+					 if (rbrak.kind != LEXRBRAK) throw "Right bracket expected";
+					 if (!(array_size instanceof CValue))
+						 throw "Array size should be a simple value";
+					 varType = new CArray(varType, array_size.value, null);
+					 eos = lexer.next();
+				 }
              }
 
              if (eos.kind != LEXEOS)
@@ -1061,7 +1096,8 @@ function getLineNumber() {
          }
      }
 
-     function parseCpp(text)
+	  /* C program root. */
+     function parseCProgram(text)
      {
          var program = new CProgram();
          var lexer = new Lexer(text);
@@ -1076,6 +1112,7 @@ function getLineNumber() {
      }
      //END PARSER
 
+	  /* COMPILER */
      function storeBytes(machine, addr, size, value) {
          // LITTLE ENDIAN
          for(var i = 0; i < size; ++i) {
@@ -1118,7 +1155,14 @@ function getLineNumber() {
                  const val = varValue.getValue(machine);
                  storeBytes(machine, addr, INT_SIZE, val);
              } else if(varType.name == "char") {
-                 storeBytes(machine, addr, CHAR_SIZE, varValue.value);
+				 const val = varValue.getValue();
+				 if (varValue instanceof CArray) {
+					 for(var i=0;i<val.length;++i) {
+						 storeBytes(machine, addr+i, CHAR_SIZE, val[i]);
+					 }
+				 } else {
+					 storeBytes(machine, addr, CHAR_SIZE, val);
+				 }
              } else {
                  throw "Do not know how to serialize this type " + varType;
              }
@@ -1133,7 +1177,6 @@ function getLineNumber() {
              var size = decl.getTypeSize();
              var addr = machine.allocate(size);
              const value = (decl.initializer == null) ? null : decl.initializer;//FIXME:getValue()
-
              var variableExists = machine.variableExists(decl.varName);
              if (variableExists)
                  throw "Variable '" + decl.varName + "' already defined.";
@@ -1146,6 +1189,7 @@ function getLineNumber() {
              machine.variables.push(new Variable(decl.varName, decl.typeName, addr, size, value));
          }
      }
+	  /* END COMPILER */
      
      const machine = new Machine();
      const memoryView = new MemoryView(machine);
@@ -1155,12 +1199,12 @@ function getLineNumber() {
      {
          setError(null);
          try {
-             const program = parseCpp(document.getElementById("source").value);
+             const program = parseCProgram(document.getElementById("source").value);
              compile(program, machine);
-             memoryView.redraw();
          } catch(error) {
              setError(error);
          }
+         memoryView.redraw();
      }
      
      window.onresize = memoryView.resize;
