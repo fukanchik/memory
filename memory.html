@@ -256,7 +256,7 @@ int array[3];
               programTextChanged();
           }
           pageView.innerHTML = document.getElementById(this.divName).innerHTML;
-      }
+      };
 
       function Tutorial() {
           this.pages = [];
@@ -731,7 +731,7 @@ function getLineNumber() {
              }
          }
          throw "Can't allocate " + size;
-     }
+     };
      function* varcount() {
          var ret=0;
          while(true) {
@@ -773,8 +773,8 @@ function getLineNumber() {
              ret.push(this.items[i].value);
          }
          return ret;
-     }
-      
+     };
+
      function CDeclaration(typeName, varName, initializer) {
          this.mytype = "CDeclaration";
          this.typeName = typeName;
@@ -879,7 +879,7 @@ function getLineNumber() {
      }
      Lexer.prototype.hasNext = function() {
          return this.position < this.text.length;
-     }
+     };
      Lexer.prototype.next = function() {
          if(!this.hasNext()) return new Lexeme(LEXEOF, null, 0, 0);
 
@@ -961,7 +961,7 @@ function getLineNumber() {
              return new Lexeme(LEXRCURL, null, pos, pos);
          }
          throw "Can't make lexeme out of " + ch;
-     }
+     };
      //END LEXER
      
      //TOP DOWN PARSER
@@ -974,11 +974,11 @@ function getLineNumber() {
       CType.prototype.elementSize = function() {
           if (this.isPointer) return PTR_SIZE;
           return this.elSize;
-      }
+      };
       CType.prototype.getSize = function() {
           if (this.isPointer) return PTR_SIZE;
           return this.elSize;
-      }
+      };
       
      function buildTypeSpecifier(name) {
          if (name == "int") {
@@ -1080,7 +1080,7 @@ function getLineNumber() {
          // LITTLE ENDIAN
          for(var i = 0; i < size; ++i) {
              const b = value & 0xFF;
-             machine.poke(addr+i, b)
+             machine.poke(addr+i, b);
              value /= 0x100;
          }
      }
@@ -1170,7 +1170,7 @@ function getLineNumber() {
       window.onload = function() {
           const editor = new CodeEditor();
           tutorial.display();
-      }
+      };
     </script>
   </body>
 </html>
