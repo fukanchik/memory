@@ -538,12 +538,12 @@ function getLineNumber() {
                  throw "Unknown state "+state;
              }
              g.fillText(value, extra2 + this.cellWidth*i+2+(this.cellWidth-width)/2, memH-4-(memH+4-valH)/2);
-             if(state == UNALLOCATED) {
+             if (state == UNALLOCATED) {
                  g.moveTo(extra2 + this.cellWidth*i,     memH-2);
                  g.lineTo(extra2 + this.cellWidth*(i+1), 2);
-                 g.moveTo(extra2 + this.cellWidth*i,     memH/2-2)
+                 g.moveTo(extra2 + this.cellWidth*i,     memH/2-2);
                  g.lineTo(extra2 + this.cellWidth*(i+0.5), 2);
-                 g.moveTo(extra2 + this.cellWidth*(i+0.5),  memH-2)
+                 g.moveTo(extra2 + this.cellWidth*(i+0.5),  memH-2);
                  g.lineTo(extra2 + this.cellWidth*(i+1), memH/2-2);
              } else if(state==ALLOCATED) {
              } else if(state==ASSIGNED) {
@@ -657,12 +657,12 @@ function getLineNumber() {
                  g.lineTo(tLeft, base - ARROW_V_PADDING*arrowExtraHeight);
                  g.lineTo(tLeft, base + textHeight);
                  g.lineTo(tLeft - 4, base + textHeight-3);
-                 g.moveTo(tLeft + 4, base + textHeight-3)
+                 g.moveTo(tLeft + 4, base + textHeight-3);
                  g.lineTo(tLeft, base + textHeight);
                  g.stroke();
              }
          }
-     }
+     };
       /* END: MemoryView */
      const UNALLOCATED = 0;
      const ALLOCATED = 1;//allocated, no value
@@ -691,27 +691,27 @@ function getLineNumber() {
              return variable;
          }
          throw "Variable not found " + varName;
-     }
-      Machine.prototype.variableExists = function(varName)
-      {
+     };
+     Machine.prototype.variableExists = function(varName)
+     {
          for(var i = 0; i < this.variables.length; ++i) {
              const variable = this.variables[i];
              if(variable.name != varName) continue;
              return true;
          }
-          return false;
-      }
+         return false;
+     };
      Machine.prototype.poke = function(addr, val) {
          this.memory[addr].value = val;
          this.memory[addr].state = ASSIGNED;
-     }
+     };
      
      Machine.prototype.reset = function() {
          for(var i=0;i<this.memsize;++i) {
              this.memory[i]=new MemCell();
          }
          this.variables= new Array();
-     }
+     };
      
      function checkUnallocated(mem, addr, size) {
          for(var i=addr;i<addr+size;++i) {
@@ -784,7 +784,7 @@ function getLineNumber() {
      CDeclaration.prototype.getTypeSize = function() {
          var ret= this.typeName.getSize();
          return this.typeName.getSize();
-     }
+     };
      function CValue(val) {
          this.value = val;
      }
