@@ -245,7 +245,7 @@ char string_literal[] = "string-literal";
     <h1>Memory and pointers demonstration</h1>
     <h2>Real thing</h2>
     <div id="hardware-info">
-      Memory size: 256 bytes, Integer size: 4, Char size: 1, Pointer size: 2, Padding: 0
+      Memory size: 256 bytes, Endianness: little, Integer size: 4, Char size: 1, Pointer size: 2, Padding: 0
     </div>
     <div id="memory-wrapper">
       <canvas width="10" height="10" id="memory"></canvas>
@@ -417,7 +417,6 @@ function getLineNumber() {
       }
 
       function CodeEditor() {
-          var linenumbers = document.getElementById('line-numbers');
           var editor = document.getElementById('source');
 
           editor.addEventListener('keyup', init);
