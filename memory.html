@@ -272,7 +272,7 @@ char string_literal[] = "string-literal";
     <div>(<a href="https://github.com/fukanchik/memory">Source on Github</a>)</div>
     <!-- info block -->
     <script>
-      'use scrict';
+      'use strict';
 
       function DivPage(divName, codeName) {
           this.divName = divName;
@@ -338,6 +338,7 @@ char string_literal[] = "string-literal";
              text = msg;
              if (stack != null) text += " at <pre>" + stack + "</pre>";
          }
+
          document.getElementById("error").innerHTML = text;
      }
 
@@ -383,14 +384,15 @@ function getTotalLineSize(size, line, options) {
     return Math.ceil(result);
 }
 
-function getLineNumber() {
+	  function getLineNumber() {
           var editor = document.getElementById('source');
 
-    var textLines = editor.value.substr(0, editor.selectionStart).split("\n");
-    var currentLineNumber = textLines.length;
-    var currentColumnIndex = textLines[textLines.length-1].length;
-    return currentLineNumber;
-}
+		  var textLines = editor.value.substr(0, editor.selectionStart).split("\n");
+		  var currentLineNumber = textLines.length;
+		  var currentColumnIndex = textLines[textLines.length-1].length;
+
+		  return currentLineNumber;
+	  }
       
       function init() {
           var linenumbers = document.getElementById('line-numbers');
@@ -540,7 +542,7 @@ function getLineNumber() {
          var onscreenCells = Math.floor(w / this.cellWidth);
 
          //memory grid
-         for(i=0;i<onscreenCells+1;i++) {
+         for(let i=0;i<onscreenCells+1;i++) {
              g.moveTo(extra2+this.cellWidth*i,2);
              g.lineTo(extra2+this.cellWidth*i,memH-2);
          }
@@ -552,7 +554,7 @@ function getLineNumber() {
          g.font = "bold 18pt Serif";
          var valH = g.measureText("00").width;
          g.beginPath();
-         for(i=0;i<onscreenCells+1;i++) {
+         for(let i=0;i<onscreenCells+1;i++) {
              const i2=i+first;
              var value = this.machine.memory[i2].value.toString(16);
              if(value.length==1)value="0"+value;
@@ -589,7 +591,7 @@ function getLineNumber() {
          var textHeight = g.measureText("W").width;
          var paddingVertical=2;
          g.fillStyle = "black";
-         for(i=0;i<onscreenCells+1;i++) {
+         for(let i=0;i<onscreenCells+1;i++) {
              const i2=i+first;
              var addr = i2.toString(16);
              var width = g.measureText(addr).width;
@@ -602,7 +604,7 @@ function getLineNumber() {
          g.fillStyle = "black";
 
          var arrowHeights = [];
-         for(var varI in machine.variables) {
+         for(let varI in machine.variables) {
              var variable = machine.variables[varI];
              if(variable.addr > onscreenCells+1) {
                  //continue;
@@ -708,14 +710,14 @@ function getLineNumber() {
          this.memsize = 256;
          this.bitness = 8;
          this.memory = [];
-         for(var i = 0; i < this.memsize; ++i) {
+         for(let i = 0; i < this.memsize; ++i) {
              this.memory[i] = new MemCell();
          }
          this.variables = [];
      }
      Machine.prototype.getVariable = function(varName)
      {
-         for(var i = 0; i < this.variables.length; ++i) {
+         for(let i = 0; i < this.variables.length; ++i) {
              const variable = this.variables[i];
              if(variable.name != varName) continue;
              return variable;
@@ -724,7 +726,7 @@ function getLineNumber() {
      };
      Machine.prototype.variableExists = function(varName)
      {
-         for(var i = 0; i < this.variables.length; ++i) {
+         for(let i = 0; i < this.variables.length; ++i) {
              const variable = this.variables[i];
              if(variable.name != varName) continue;
              return true;
@@ -737,14 +739,14 @@ function getLineNumber() {
      };
      
      Machine.prototype.reset = function() {
-         for(var i=0;i<this.memsize;++i) {
+         for(let i=0;i<this.memsize;++i) {
              this.memory[i] = new MemCell();
          }
          this.variables = [];
      };
      
      function checkUnallocated(mem, addr, size) {
-         for(var i=addr;i<addr+size;++i) {
+         for(let i=addr;i<addr+size;++i) {
              if(mem[i].state != UNALLOCATED) {
                  return false;
              }
@@ -752,9 +754,9 @@ function getLineNumber() {
          return true;
      }
      Machine.prototype.allocate = function(size) {
-         for(var i=0;i<(this.memsize - size);++i) {
+         for(let i=0;i<(this.memsize - size);++i) {
              if(checkUnallocated(this.memory, i, size)) {
-                 for(var j=i;j<i+size;++j) {
+                 for(let j=i;j<i+size;++j) {
                      this.memory[j].state=ALLOCATED;
                  }
                  return i;
@@ -799,7 +801,7 @@ function getLineNumber() {
      CArray.prototype.asBytes = function() {
          //CValue(char) array is the only thing supported now
          var ret=[];
-         for(var i=0;i<this.items.length;++i) {
+         for(let i=0;i<this.items.length;++i) {
              ret.push(this.items[i].value);
          }
          return ret;
@@ -971,7 +973,7 @@ function getLineNumber() {
              //char
              const start = this.position;
              ch=this.text[this.position++];
-             end=this.text[this.position++];
+             const end=this.text[this.position++];
              if (end != "'") throw "Expecting '";
              const stop = this.position;
              return new Lexeme(LEXCHAR, ch.charCodeAt(0), start, stop);
@@ -1048,7 +1050,7 @@ function getLineNumber() {
          } else if(lex.kind == LEXSTRING) {
              var arr = [];
 
-             for(i = 0; i < lex.name.length; ++i) {
+             for(let i = 0; i < lex.name.length; ++i) {
                  arr.push(new CValue(lex.name[i].charCodeAt(0)));
              }
              arr.push(new CValue(0));
@@ -1123,9 +1125,8 @@ function getLineNumber() {
      {
          var program = new CProgram();
          var lexer = new Lexer(text);
-         var i;
          
-         for(i = 0; i < 100 && lexer.hasNext(); ++i) {
+         for(let i = 0; i < 100 && lexer.hasNext(); ++i) {
              var decl = declaration(lexer);
              if(decl == null) continue;
              program.declarations.push(decl);
@@ -1137,7 +1138,7 @@ function getLineNumber() {
 	  /* COMPILER */
      function storeBytes(machine, addr, size, value) {
          // LITTLE ENDIAN
-         for(var i = 0; i < size; ++i) {
+         for(let i = 0; i < size; ++i) {
              const b = value & 0xFF;
              machine.poke(addr+i, b);
              value /= 0x100;
@@ -1164,7 +1165,7 @@ function getLineNumber() {
              } else if(varValue instanceof CArray) {
                  var arrAddr = machine.allocate(varValue.getSize());
                  var arrBytes = varValue.asBytes();
-                 for(var i=0;i<arrBytes.length;++i) {
+                 for(let i=0;i<arrBytes.length;++i) {
                      storeBytes(machine, arrAddr+i, 1, arrBytes[i]);
                  }
                  //create unnamed var for array
@@ -1177,9 +1178,9 @@ function getLineNumber() {
                  const val = varValue.getValue(machine);
                  storeBytes(machine, addr, INT_SIZE, val);
              } else if(varType.name == "char") {
-				 const val = varValue.getValue();
+				 const val = varValue.getValue(machine);
 				 if (varValue instanceof CArray) {
-					 for(var i=0;i<val.length;++i) {
+					 for(let i=0;i<val.length;++i) {
 						 storeBytes(machine, addr+i, CHAR_SIZE, val[i]);
 					 }
 				 } else {
@@ -1194,7 +1195,7 @@ function getLineNumber() {
      function compile(program, machine)
      {
          machine.reset();
-         for(var i in program.declarations) {
+         for(let i in program.declarations) {
              var decl = program.declarations[i];
              var size = decl.getTypeSize();
              var addr = machine.allocate(size);
