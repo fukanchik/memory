@@ -385,11 +385,10 @@ function getTotalLineSize(size, line, options) {
 }
 
 	  function getLineNumber() {
-          var editor = document.getElementById('source');
+          const editor = document.getElementById('source');
 
-		  var textLines = editor.value.substr(0, editor.selectionStart).split("\n");
-		  var currentLineNumber = textLines.length;
-		  var currentColumnIndex = textLines[textLines.length-1].length;
+		  const textLines = editor.value.substr(0, editor.selectionStart).split("\n");
+		  const currentLineNumber = textLines.length;
 
 		  return currentLineNumber;
 	  }
