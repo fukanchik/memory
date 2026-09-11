@@ -337,17 +337,18 @@ char string_literal[] = "string-literal";
       /* Display error message at the error area. */
       function setError(error)
      {
-         var text;
+         let text;
 
          if (error == null)
          {
              /* No error. */
              text = "&nbsp;";
          } else {
-             var msg = "ERROR: " + error;
-             var stack = error.stack;
+             const msg = "ERROR: " + error;
+             const stack = error.stack;
              text = msg;
-             if (stack != null) text += " at <pre>" + stack + "</pre>";
+             if (stack != null)
+                 text += " at <pre>" + stack + "</pre>";
          }
 
          document.getElementById("error").innerHTML = text;
