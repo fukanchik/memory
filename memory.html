@@ -358,25 +358,58 @@ char string_literal[] = "string-literal";
       const ALLOCATED_COLOR = "#FF4040";
       const ASSIGNED_COLOR = "green";
 
-      /* Display error message at the error area. */
-      function setError(error)
-     {
+      /* Errors from compile and render stages. */
+      let compileError = null;
+      let renderError = null;
+
+      function escapeHtml(s)
+      {
+          return String(s)
+              .replace(/&/g, "&amp;")
+              .replace(/</g, "&lt;")
+              .replace(/>/g, "&gt;");
+      }
+
+      function formatErrorWithStack(error)
+      {
+          let text = escapeHtml(error);
+          const stack = error.stack;
+
+          if (stack != null)
+              text += " at <pre>" + escapeHtml(stack) + "</pre>";
+
+          return text;
+      }
+
+      /* If there are any error messages, display them at the error area. */
+      function showErrors()
+      {
          let text;
 
-         if (error == null)
+         if (compileError == null && renderError == null)
          {
              /* No error. */
              text = "&nbsp;";
          } else {
-             const msg = "ERROR: " + error;
-             const stack = error.stack;
+             let msg = "ERROR: ";
+             let sep = "";
+
+             if (compileError != null)
+             {
+                 msg += formatErrorWithStack(compileError);
+                 sep = "<br>";
+             }
+
+             if (renderError != null)
+             {
+                 msg += sep + "<small>" + formatErrorWithStack(renderError) + "</small>";
+             }
+
              text = msg;
-             if (stack != null)
-                 text += " at <pre>" + stack + "</pre>";
          }
 
          document.getElementById("error").innerHTML = text;
-     }
+      }
 
 
       /* BEGIN: Code editor*/
@@ -519,10 +552,13 @@ char string_literal[] = "string-literal";
          this.canvas.addEventListener("mouseup", function(ev) {that.dragStop(ev);});
          this.canvas.addEventListener("mousemove", function(ev) {that.dragDo(ev);});
      }
-      MemoryView.prototype.setWidth = function(w) {
+
+     MemoryView.prototype.setWidth = function(w) {
          this.canvas.width = w;
+
          this.redraw();
      };
+
      MemoryView.prototype.dragDo = function(ev) {
          if(!this.dragging) return;
          var w = this.canvas.width;
@@ -534,6 +570,7 @@ char string_literal[] = "string-literal";
          if(newOffset > 0) newOffset=0;
          this.offset = newOffset;
          this.mouseX = ev.clientX;
+
          this.redraw();
      };
      
@@ -552,7 +589,32 @@ char string_literal[] = "string-literal";
          memoryView.setWidth(outer.width);
      };
      
-     MemoryView.prototype.redraw = function()
+      MemoryView.prototype.redraw = function()
+      {
+          try {
+              this.redrawUnsafe();
+              renderError = null;
+          } catch(error) {
+              this.grayOut();
+              renderError = error;
+          }
+
+          showErrors();
+      };
+
+      MemoryView.prototype.grayOut = function()
+      {
+          const g = this.graphics;
+
+          g.save();
+          g.beginPath();
+          g.globalAlpha = 0.6;
+          g.fillStyle = "#c0c0c0";
+          g.fillRect(0, 0, this.canvas.width, this.canvas.height);
+          g.restore();
+      };
+
+     MemoryView.prototype.redrawUnsafe = function()
      {
          var g = this.graphics;
          var w = this.canvas.width;
@@ -1259,13 +1321,16 @@ char string_literal[] = "string-literal";
 
      function programTextChanged()
      {
-         setError(null);
          try {
-             const program = parseCProgram(document.getElementById("source").value);
+             const source = document.getElementById("source").value;
+             const program = parseCProgram(source);
+
              compile(program, machine);
+             compileError = null;
          } catch(error) {
-             setError(error);
+             compileError = error;
          }
+
          memoryView.redraw();
      }
      
