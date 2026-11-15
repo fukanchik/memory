@@ -234,10 +234,10 @@ char string_literal[] = "string-literal";
         <p><a href="#" onclick="tutorial.next();">Next page</a></p>
       </span>
       <span id="second-page">
-        <p>Memory is shown as a stripe of memory cells. Under each cell there is the cell address in hexadecimal. Inside of each cell it's contents is shown.</p>
+        <p>Memory is shown as a stripe of memory cells. Under each cell there is the cell address in hexadecimal. Inside of each cell its contents are shown.</p>
         <p>Unallocated memory cells are shown in <span style="background-color: #cf8f8f; color: gray; font-weight: bold;">GRAY</span>.</p>
         <p>Allocated but uninitialized memory cells are shown in <span style="background-color: #cf8f8f; color: red; font-weight: bold;">RED</span>.</p>
-        <p>Allocated <em>and</em> uninitialized memory cells are shown in <span style="background-color: #cf8f8f; color: green; font-weight: bold;">GREEN</span>.</p>
+        <p>Allocated <em>and</em> initialized memory cells are shown in <span style="background-color: #cf8f8f; color: green; font-weight: bold;">GREEN</span>.</p>
         <p>Whatever you entered into "Source" block is compiled and displayed in the "Real thing" block.</p>
         <p>As you edit your source code the memory stripe is updated automatically.</p>
         <p><a href="#" onclick="tutorial.next();">Next page</a></p>
@@ -251,9 +251,10 @@ char string_literal[] = "string-literal";
         <p>Here you can see a pointer variable "name" pointing to unnamed block of memory which contains characters "Tanya", and a char pointer which points to name itself (here we differ from the real C language - it will be double pointer in the language).</p>
         <p><a href="#" onclick="tutorial.next();">Next page</a></p>
       </span>
-	  <span id="fifth-page">Ever wondered what is the difference between char [] and char *?
+      <span id="fifth-page">
+        <p>Ever wondered what is the difference between char [] and char *?</p>
         <p><a href="#" onclick="tutorial.next();">Next page</a></p>
-	  </span>
+      </span>
       <span id="sixth-page">
         <p>More features are shown here. Feel free to explore on your own.</p>
       </span>
@@ -369,42 +370,42 @@ char string_literal[] = "string-literal";
           return lines.split(/\r?\n/);
       }
 
-function getLineHeight(elem) {
-    var computedStyle = window.getComputedStyle(elem);
-    var lineHeight = computedStyle.getPropertyValue('line-height');
-    var lineheight;
+      function getLineHeight(elem) {
+          var computedStyle = window.getComputedStyle(elem);
+          var lineHeight = computedStyle.getPropertyValue('line-height');
+          var lineheight;
     
-    if (lineHeight === 'normal') {
-        var fontSize = computedStyle.getPropertyValue('font-size');
-        lineheight = parseFloat(fontSize) * 1.2;
-    } else {
-        lineheight = parseFloat(lineHeight);
-    }
+          if (lineHeight === 'normal') {
+              var fontSize = computedStyle.getPropertyValue('font-size');
+              lineheight = parseFloat(fontSize) * 1.2;
+          } else {
+              lineheight = parseFloat(lineHeight);
+          }
     
-    return lineheight;
-}
+          return lineheight;
+      }
 
-function getTotalLineSize(size, line, options) {
-    if (typeof options === 'object') options = {};
-    var p = document.createElement('span');
-    p.style.setProperty('white-space', 'pre');
-    p.style.display = 'inline-block';
-    if (typeof options.fontSize !== 'undefined') p.style.fontSize = options.fontSize;
-    p.innerHTML = line;
-    document.body.appendChild(p);
-    var result = (p.scrollWidth / size);
-    p.remove();
-    return Math.ceil(result);
-}
+      function getTotalLineSize(size, line, options) {
+          if (typeof options === 'object') options = {};
+          var p = document.createElement('span');
+          p.style.setProperty('white-space', 'pre');
+          p.style.display = 'inline-block';
+          if (typeof options.fontSize !== 'undefined') p.style.fontSize = options.fontSize;
+          p.innerHTML = line;
+          document.body.appendChild(p);
+          var result = (p.scrollWidth / size);
+          p.remove();
+          return Math.ceil(result);
+      }
 
-	  function getLineNumber() {
-          const editor = document.getElementById('source');
+      function getLineNumber() {
+            const editor = document.getElementById('source');
 
-		  const textLines = editor.value.substr(0, editor.selectionStart).split("\n");
-		  const currentLineNumber = textLines.length;
+            const textLines = editor.value.substr(0, editor.selectionStart).split("\n");
+            const currentLineNumber = textLines.length;
 
-		  return currentLineNumber;
-	  }
+            return currentLineNumber;
+      }
       
       function init() {
           var linenumbers = document.getElementById('line-numbers');
@@ -818,9 +819,10 @@ function getTotalLineSize(size, line, options) {
          }
          return ret;
      };
-	  CArray.prototype.getValue = function(machine) {
+
+     CArray.prototype.getValue = function(machine) {
           return this.asBytes();
-	  };
+     };
 
      function CDeclaration(typeName, varName, initializer) {
          this.mytype = "CDeclaration";
@@ -920,7 +922,7 @@ function getTotalLineSize(size, line, options) {
      function Lexer(text) {
          this.text = text;
          this.position = 0;
-		 this.backtrack = [];
+         this.backtrack = [];
      }
      function isspace(chr) {
          return chr==' ' || chr=='\t' || chr=='\n' || chr=='\r' || chr==-1;
@@ -928,16 +930,19 @@ function getTotalLineSize(size, line, options) {
      Lexer.prototype.hasNext = function() {
          return this.position < this.text.length;
      };
-	  Lexer.prototype.peek = function() {
-		  var ret = this.next();
-		  this.backtrack.push(ret);
-		  return ret;
-	  }
+
+     Lexer.prototype.peek = function() {
+          var ret = this.next();
+          this.backtrack.push(ret);
+          return ret;
+     }
+
      Lexer.prototype.next = function() {
-		 if (this.backtrack.length > 0)
-		 {
-			 return this.backtrack.pop();
-		 }
+         if (this.backtrack.length > 0)
+         {
+             return this.backtrack.pop();
+         }
+
          if(!this.hasNext()) return new Lexeme(LEXEOF, null, 0, 0);
 
          while(isspace(this.text[this.position])) this.position++;
@@ -1072,7 +1077,7 @@ function getTotalLineSize(size, line, options) {
          throw "Expression expected. Got " + lex_kind_string(lex.kind);
      }
 
-	  /* C declaration. */
+     /* C declaration. */
      function declaration(lexer)
      {
          var lexType = lexer.next();
@@ -1101,26 +1106,26 @@ function getTotalLineSize(size, line, options) {
                  }
                  eos = lexer.next();
              } else if (eos.kind == LEXLBRAK) {
-				 var next = lexer.peek();
-				 if (next.kind == LEXRBRAK) {
-					 /* char name[] = ""; */
-					 
-					 next = lexer.next();
-					 var eq = lexer.next();
-					 if (eq.kind != LEXEQL) throw "Array initialization expected.";
-					 initializer = expression(lexer);
-					 varType.elSize = initializer.nElem;
-					 eos = lexer.next();
-				 } else {
-					 /* char/int name[2];*/
-					 var array_size = expression(lexer);
-					 var rbrak = lexer.next();
-					 if (rbrak.kind != LEXRBRAK) throw "Right bracket expected";
-					 if (!(array_size instanceof CValue))
-						 throw "Array size should be a simple value";
-					 varType = new CArray(varType, array_size.value, null);
-					 eos = lexer.next();
-				 }
+                 var next = lexer.peek();
+                 if (next.kind == LEXRBRAK) {
+                     /* char name[] = ""; */
+                     
+                     next = lexer.next();
+                     var eq = lexer.next();
+                     if (eq.kind != LEXEQL) throw "Array initialization expected.";
+                     initializer = expression(lexer);
+                     varType.elSize = initializer.nElem;
+                     eos = lexer.next();
+                 } else {
+                     /* char/int name[2];*/
+                     var array_size = expression(lexer);
+                     var rbrak = lexer.next();
+                     if (rbrak.kind != LEXRBRAK) throw "Right bracket expected";
+                     if (!(array_size instanceof CValue))
+                         throw "Array size should be a simple value";
+                     varType = new CArray(varType, array_size.value, null);
+                     eos = lexer.next();
+                 }
              }
 
              if (eos.kind != LEXEOS)
@@ -1132,7 +1137,7 @@ function getTotalLineSize(size, line, options) {
          }
      }
 
-	  /* C program root. */
+     /* C program root. */
      function parseCProgram(text)
      {
          var program = new CProgram();
@@ -1147,7 +1152,7 @@ function getTotalLineSize(size, line, options) {
      }
      //END PARSER
 
-	  /* COMPILER */
+     /* COMPILER */
      function storeBytes(machine, addr, size, value) {
          // LITTLE ENDIAN
          for(let i = 0; i < size; ++i) {
@@ -1190,14 +1195,14 @@ function getTotalLineSize(size, line, options) {
                  const val = varValue.getValue(machine);
                  storeBytes(machine, addr, INT_SIZE, val);
              } else if(varType.name == "char") {
-				 const val = varValue.getValue(machine);
-				 if (varValue instanceof CArray) {
-					 for(let i=0;i<val.length;++i) {
-						 storeBytes(machine, addr+i, CHAR_SIZE, val[i]);
-					 }
-				 } else {
-					 storeBytes(machine, addr, CHAR_SIZE, val);
-				 }
+                 const val = varValue.getValue(machine);
+                 if (varValue instanceof CArray) {
+                     for(let i=0;i<val.length;++i) {
+                         storeBytes(machine, addr+i, CHAR_SIZE, val[i]);
+                     }
+                 } else {
+                     storeBytes(machine, addr, CHAR_SIZE, val);
+                 }
              } else {
                  throw "Do not know how to serialize this type " + varType;
              }
@@ -1224,7 +1229,7 @@ function getTotalLineSize(size, line, options) {
              machine.variables.push(new Variable(decl.varName, decl.typeName, addr, size, value));
          }
      }
-	  /* END COMPILER */
+     /* END COMPILER */
      
      const machine = new Machine();
      const memoryView = new MemoryView(machine);
