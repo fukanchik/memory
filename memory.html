@@ -221,15 +221,27 @@ char string_literal[] = "string-literal";
 </span>
       <span id="first-page">
         <p>
-          This is a C language pointers tutorial. It's purpose is to show how primitive types like 'int', 'char' and pointers are laid out in computer memory.
-        </p>
-        <p>It supports a subset of the C language and in some cases deviates from the language. Your program is limited to declarations only. No real code allowed. Arithmetic operations are not suppored. Type checks are very limited - in many cases you can assign pointers of different types without type coercion.
-        </p>
-        <p>
-          In the "Source" window you can enter your C language program. It will be compiled into memory layout which is displayed above in the "Real thing" stripe.
+          This is a C language pointers tutorial. Its purpose is to show how
+          primitive types like 'int', 'char' and pointers are laid out in
+          computer memory.
         </p>
         <p>
-          The "Real thing" is a simulation of a computer with 256 bytes of memory, 4 byte-wide integer type, 1 byte char type and 2 byte poitner type. All the bytes are displayed in the "Real thing" stripe above. You can scroll it by dragging left and right with a mouse.
+          It supports a subset of the C language and in some cases deviates
+          from the language. Your program is limited to declarations only. No
+          real code allowed. Arithmetic operations are not supported. Type
+          checks are very limited - in many cases you can assign pointers of
+          different types without type coercion.
+        </p>
+        <p>
+          In the "Source" window you can enter your C language program. It will
+          be compiled into a memory layout which is displayed above in the "Real
+          thing" stripe.
+        </p>
+        <p>
+          The "Real thing" is a simulation of a computer with 256 bytes of
+          memory, a 4-byte integer type, a 1-byte char type and a 2-byte
+          pointer type. All the bytes are displayed in the "Real thing" stripe
+          above. You can scroll it by dragging left and right with a mouse.
         </p>
         <p><a href="#" onclick="tutorial.next();">Next page</a></p>
       </span>
@@ -238,7 +250,10 @@ char string_literal[] = "string-literal";
         <p>Unallocated memory cells are shown in <span style="background-color: #cf8f8f; color: gray; font-weight: bold;">GRAY</span>.</p>
         <p>Allocated but uninitialized memory cells are shown in <span style="background-color: #cf8f8f; color: red; font-weight: bold;">RED</span>.</p>
         <p>Allocated <em>and</em> initialized memory cells are shown in <span style="background-color: #cf8f8f; color: green; font-weight: bold;">GREEN</span>.</p>
-        <p>Whatever you entered into "Source" block is compiled and displayed in the "Real thing" block.</p>
+        <p>
+          Whatever you entered into the "Source" block is compiled and displayed
+          in the "Real thing" block.
+        </p>
         <p>As you edit your source code the memory stripe is updated automatically.</p>
         <p><a href="#" onclick="tutorial.next();">Next page</a></p>
       </span>
@@ -248,11 +263,18 @@ char string_literal[] = "string-literal";
       </span>
       <span id="fourth-page">
         <p>Pointers are shown as <span style="color: blue; font-weight: bold;">blue</span> arrows from pointer to the pointee.</p>
-        <p>Here you can see a pointer variable "name" pointing to unnamed block of memory which contains characters "Tanya", and a char pointer which points to name itself (here we differ from the real C language - it will be double pointer in the language).</p>
+        <p>
+          Here you can see a pointer variable "name" pointing to an unnamed
+          block of memory which contains characters "Tanya", and a char pointer
+          which points to name itself (here we differ from the real C language -
+          it would be a double pointer in the language).
+        </p>
         <p><a href="#" onclick="tutorial.next();">Next page</a></p>
       </span>
       <span id="fifth-page">
-        <p>Ever wondered what is the difference between char [] and char *?</p>
+        <p>
+          Ever wondered what the difference is between char [] and char *?
+        </p>
         <p><a href="#" onclick="tutorial.next();">Next page</a></p>
       </span>
       <span id="sixth-page">
@@ -331,7 +353,7 @@ char string_literal[] = "string-literal";
 
       //Visual
       const DRAW_ARROWS = true;
-      const HIGHTLIGHT_VAR_MEMORY = true;
+      const HIGHLIGHT_VAR_MEMORY = true;
       const UNALLOCATED_COLOR = "gray";
       const ALLOCATED_COLOR = "#FF4040";
       const ASSIGNED_COLOR = "green";
@@ -612,7 +634,7 @@ char string_literal[] = "string-literal";
              g.fillText(addr, left, memH+paddingVertical+textHeight);
          }
 
-         //variables
+         // variables
          g.strokeStyle = "#a08080";
          g.fillStyle = "black";
 
@@ -628,7 +650,7 @@ char string_literal[] = "string-literal";
              var middle = Math.floor( (right+left - width)/2 );
              var up = memH + paddingVertical + textHeight;
 
-             if(HIGHTLIGHT_VAR_MEMORY) {
+             if(HIGHLIGHT_VAR_MEMORY) {
                  g.strokeStyle = "#fff";
                  g.beginPath();
                  g.moveTo(left+4, 4);
